@@ -1,0 +1,4 @@
+name: AutoPickup
+version: '${project.version}'
+main: me.kyaafira.autopickup.Main
+api-version: '1.20'
