@@ -51,7 +51,7 @@ public final class Main extends JavaPlugin implements Listener {
         event.setDropItems(false);
 
         if (isFull) {
-            player.sendMessage(Objects.requireNonNull(this.getConfig().getString("full-inventory")));
+            player.sendMessage(Objects.requireNonNull(Objects.requireNonNull(this.getConfig().getString("full-inventory")).replace("&", "§")));
             event.setCancelled(true);
         }
 
