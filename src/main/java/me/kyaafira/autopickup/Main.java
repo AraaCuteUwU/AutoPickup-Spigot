@@ -22,7 +22,7 @@ public final class Main extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onBreak(BlockBreakEvent event) {
+    public void onBreak(@NotNull BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
         @NotNull Collection<ItemStack> drops = block.getDrops();
@@ -30,7 +30,7 @@ public final class Main extends JavaPlugin implements Listener {
         ItemStack[] itemsToAdd = new ItemStack[drops.toArray().length];
         int itemCount = 0;
 
-        if (this.isWorldBlacklisted(player)) return;
+        if (isWorldBlacklisted(player)) return;
 
         for (ItemStack drop : drops) {
             if (player.getInventory().firstEmpty() == -1) {
