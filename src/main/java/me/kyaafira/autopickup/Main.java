@@ -30,7 +30,7 @@ public final class Main extends JavaPlugin implements Listener {
         ItemStack[] itemsToAdd = new ItemStack[drops.toArray().length];
         int itemCount = 0;
 
-        if (isWorldBlacklisted(player)) return;
+        if (isWorldBlacklisted(player) || event.isCancelled()) return;
 
         for (ItemStack drop : drops) {
             if (player.getInventory().firstEmpty() == -1) {
