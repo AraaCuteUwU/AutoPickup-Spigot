@@ -5,6 +5,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -18,8 +21,33 @@ public final class Main extends JavaPlugin implements Listener {
     public void onEnable() {
         saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
-
     }
+    
+    public boolean hasMending(Player player) {
+ 	   ItemStack item = player.getInventory().getItemInMainHand();
+   	 return item !== null && item.containsEnchantment(Enchantment.MENDING);
+	}
+	
+	public void repairItem(Player player, int exp) {
+		ItemStack item = player.getInventory().getItemInMainHand();
+		final short maxDurability = item.getType().getMaxDurability();
+		if (maxDurability != 0) {
+			final ItemMeta meta = item.getItemMeta();
+			if((meta instanceof Damageable damageable)){
+				if(damageable.hasDamage()){
+					final int damage = damageable.getDamage();
+					if (damage > 0) {
+						if(hasMending(player)){
+							final int newDamage = damage - (exp * 2);
+							damageable.setDamage(Math.max(newDamage, 0));
+         			 	  item.setItemMeta(damageable);
+         				   player.getInventory().setItemInMainHand(item);
+         				}
+         			}
+    			}
+    		}
+    	}
+	}
 
     @EventHandler
     public void onBreak(@NotNull BlockBreakEvent event) {
@@ -48,6 +76,7 @@ public final class Main extends JavaPlugin implements Listener {
             }
         }
 
+		repairItem(player);
         event.setDropItems(false);
 
         if (isFull) {
