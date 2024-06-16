@@ -22,37 +22,38 @@ public final class Main extends JavaPlugin implements Listener {
         saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
     }
-    
+
     public boolean hasMending(Player player) {
- 	   ItemStack item = player.getInventory().getItemInMainHand();
-   	 return item !== null && item.containsEnchantment(Enchantment.MENDING);
-	}
-	
-	public void repairItem(Player player, int exp) {
-		ItemStack item = player.getInventory().getItemInMainHand();
-		final short maxDurability = item.getType().getMaxDurability();
-		if (maxDurability != 0) {
-			final ItemMeta meta = item.getItemMeta();
-			if((meta instanceof Damageable damageable)){
-				if(damageable.hasDamage()){
-					final int damage = damageable.getDamage();
-					if (damage > 0) {
-						if(hasMending(player)){
-							final int newDamage = damage - (exp * 2);
-							damageable.setDamage(Math.max(newDamage, 0));
-         			 	  item.setItemMeta(damageable);
-         				   player.getInventory().setItemInMainHand(item);
-         				}
-         			}
-    			}
-    		}
-    	}
-	}
+        ItemStack item = player.getInventory().getItemInMainHand();
+        return item.containsEnchantment(Enchantment.MENDING);
+    }
+
+    public void repairItem(Player player, int exp) {
+        ItemStack item = player.getInventory().getItemInMainHand();
+        final short maxDurability = item.getType().getMaxDurability();
+        if (maxDurability != 0) {
+            final ItemMeta meta = item.getItemMeta();
+            if ((meta instanceof Damageable damageable)) {
+                if (damageable.hasDamage()) {
+                    final int damage = damageable.getDamage();
+                    if (damage > 0) {
+                        if (hasMending(player)) {
+                            final int newDamage = damage - (exp * 2);
+                            damageable.setDamage(Math.max(newDamage, 0));
+                            item.setItemMeta(damageable);
+                            player.getInventory().setItemInMainHand(item);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     @EventHandler
     public void onBreak(@NotNull BlockBreakEvent event) {
         Player player = event.getPlayer();
         Block block = event.getBlock();
+        int exp = event.getExpToDrop();
         @NotNull Collection<ItemStack> drops = block.getDrops();
         boolean isFull = false;
         ItemStack[] itemsToAdd = new ItemStack[drops.toArray().length];
@@ -71,12 +72,12 @@ public final class Main extends JavaPlugin implements Listener {
         if (itemCount > 0) {
             for (int i = 0; i < itemCount; i++) {
                 player.getInventory().addItem(itemsToAdd[i]);
-                player.giveExp(event.getExpToDrop());
-                event.setExpToDrop(0);
+                player.giveExp(exp);
+                repairItem(player, exp);
             }
         }
 
-		repairItem(player);
+        event.setExpToDrop(0);
         event.setDropItems(false);
 
         if (isFull) {
