@@ -1,5 +1,6 @@
 package me.kyaafira.autopickup;
 
+import org.bukkit.GameMode;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -59,7 +60,7 @@ public final class Main extends JavaPlugin implements Listener {
         ItemStack[] itemsToAdd = new ItemStack[drops.toArray().length];
         int itemCount = 0;
 
-        if (isWorldBlacklisted(player) || event.isCancelled()) return;
+        if (isWorldBlacklisted(player) || event.isCancelled() || !player.getGameMode().equals(GameMode.SURVIVAL)) return;
 
         for (ItemStack drop : drops) {
             if (player.getInventory().firstEmpty() == -1) {
